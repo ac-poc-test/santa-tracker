@@ -6,7 +6,7 @@ Santa flies through the time zone where the clock reads 02:00, crossing it east 
 
 Server-side rendered with Astro and the Node adapter. The map and Santa's position are rendered on the server; the page polls `/api/santa.json` to move him.
 
-Made with love by Peter
+Made with love by Peter Müller
 
 ## Run
 
