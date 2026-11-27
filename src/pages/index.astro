@@ -70,7 +70,7 @@ const map = mapPaths();
 
           <g id="santa" style={`transform: translate(${santa.x}px, ${santa.y}px)`}>
             <g class="bob">
-              <g filter="url(#sleigh-glow)" transform="translate(-46 -30)">
+              <g filter="url(#sleigh-glow)" transform="scale(0.5) translate(-46 -30)">
                 <!-- reins -->
                 <path d="M30 22 Q 50 14 66 24" stroke="#7a3b10" stroke-width="1.6" fill="none" />
                 <!-- lead reindeer -->
@@ -218,13 +218,21 @@ const map = mapPaths();
     font-family: 'Nunito', system-ui, sans-serif;
     overflow-x: hidden;
   }
+  body {
+    height: 100vh;
+    overflow: hidden;
+  }
   header {
-    text-align: center;
-    padding: 28px 16px 8px;
+    position: absolute;
+    top: 40px;
+    left: 56px;
+    z-index: 2;
+    max-width: 22rem;
   }
   h1 {
     font-family: 'Mountains of Christmas', cursive;
-    font-size: clamp(2.6rem, 7vw, 4.8rem);
+    font-size: clamp(2.4rem, 5vw, 4.4rem);
+    line-height: 1;
     margin: 0;
     color: #fff;
     text-shadow:
@@ -233,24 +241,24 @@ const map = mapPaths();
     letter-spacing: 0.02em;
   }
   .tagline {
-    margin: 4px 0 0;
+    margin: 8px 0 0;
     color: var(--muted);
   }
   main {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 16px;
+    height: 100vh;
     display: grid;
-    gap: 20px;
+    place-items: center;
   }
   .map {
     margin: 0;
+    width: 100vw;
+    height: 100vh;
   }
   .map svg {
     width: 100%;
-    height: auto;
+    height: 100%;
     display: block;
-    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.45));
+    overflow: visible;
   }
   .country {
     fill: var(--land);
@@ -301,7 +309,12 @@ const map = mapPaths();
     }
   }
   .card {
-    background: var(--card);
+    position: absolute;
+    left: 56px;
+    bottom: 48px;
+    z-index: 2;
+    width: min(380px, calc(100vw - 112px));
+    background: rgba(7, 20, 46, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 18px;
     padding: 18px 20px;

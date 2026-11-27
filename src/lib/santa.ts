@@ -27,8 +27,8 @@ const countries = feature(countriesTopo as any, (countriesTopo as any).objects.c
 
 const projection = geoNaturalEarth1().fitExtent(
   [
-    [8, 8],
-    [MAP_WIDTH - 8, MAP_HEIGHT - 8],
+    [8, 34],
+    [MAP_WIDTH - 8, MAP_HEIGHT - 40],
   ],
   { type: 'Sphere' },
 );
@@ -155,7 +155,7 @@ export function santaAt(date: Date): SantaState {
   const [x, y] = projection([cell.lon, cell.lat]) ?? [0, 0];
   const [sunX, sunY] = projection(sun) ?? [0, 0];
   const antiSun: [number, number] = [normalizeLon(sun[0] + 180), -sun[1]];
-  const nightPath = path(geoCircle().center(antiSun).radius(90)()) ?? '';
+  const nightPath = path(geoCircle().center(antiSun).radius(90).precision(1)()) ?? '';
 
   const country = countries.features.find((f) => geoContains(f, [cell.lon, cell.lat]))?.properties.name ?? null;
 
