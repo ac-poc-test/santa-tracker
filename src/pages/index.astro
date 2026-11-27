@@ -1,4 +1,5 @@
 ---
+import Countdown from '../components/Countdown.astro';
 import { MAP_HEIGHT, MAP_WIDTH, mapPaths, santaAt } from '../lib/santa';
 
 const t = Number(Astro.url.searchParams.get('t'));
@@ -27,6 +28,7 @@ const map = mapPaths();
       <h1>Santa Tracker</h1>
       <p class="tagline">Following the sleigh through the darkest hours, one time zone at a time.</p>
     </header>
+    <Countdown />
 
     <main>
       <figure class="map">
