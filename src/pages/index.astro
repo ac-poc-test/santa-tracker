@@ -1,0 +1,363 @@
+---
+import { MAP_HEIGHT, MAP_WIDTH, mapPaths, santaAt } from '../lib/santa';
+
+const t = Number(Astro.url.searchParams.get('t'));
+const now = Number.isFinite(t) && t > 0 ? new Date(t) : new Date();
+const santa = santaAt(now);
+const map = mapPaths();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Santa Tracker</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎅</text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Nunito:wght@400;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="snow" aria-hidden="true"></div>
+    <header>
+      <h1>Santa Tracker</h1>
+      <p class="tagline">Following the sleigh through the darkest hours, one time zone at a time.</p>
+    </header>
+
+    <main>
+      <figure class="map">
+        <svg viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`} role="img" aria-label="World map with Santa's position">
+          <defs>
+            <radialGradient id="ocean" cx="50%" cy="45%" r="70%">
+              <stop offset="0%" stop-color="#1d4e89" />
+              <stop offset="100%" stop-color="#0b1f45" />
+            </radialGradient>
+            <radialGradient id="sun-glow">
+              <stop offset="0%" stop-color="#fff6c2" stop-opacity="0.95" />
+              <stop offset="40%" stop-color="#ffd54a" stop-opacity="0.5" />
+              <stop offset="100%" stop-color="#ffd54a" stop-opacity="0" />
+            </radialGradient>
+            <filter id="sleigh-glow" x="-50%" y="-80%" width="200%" height="260%">
+              <feMorphology in="SourceAlpha" operator="dilate" radius="2.2" result="thick" />
+              <feFlood flood-color="#ffffff" />
+              <feComposite in2="thick" operator="in" result="outline" />
+              <feGaussianBlur in="thick" stdDeviation="6" result="blur" />
+              <feFlood flood-color="#ffe27a" flood-opacity="0.9" />
+              <feComposite in2="blur" operator="in" result="glow" />
+              <feMerge>
+                <feMergeNode in="glow" />
+                <feMergeNode in="outline" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+            <clipPath id="sphere-clip"><path d={map.sphere} /></clipPath>
+          </defs>
+
+          <path d={map.sphere} fill="url(#ocean)" />
+          <g clip-path="url(#sphere-clip)">
+            <path d={map.graticule} class="graticule" />
+            {map.countries.map((d) => <path d={d} class="country" />)}
+            <path id="night" d={santa.nightPath} class="night" />
+            <circle id="sun" cx={santa.sunX} cy={santa.sunY} r="38" fill="url(#sun-glow)" />
+          </g>
+          <path d={map.sphere} class="sphere-edge" />
+
+          <g id="trail"></g>
+
+          <g id="santa" style={`transform: translate(${santa.x}px, ${santa.y}px)`}>
+            <g class="bob">
+              <g filter="url(#sleigh-glow)" transform="translate(-46 -30)">
+                <!-- reins -->
+                <path d="M30 22 Q 50 14 66 24" stroke="#7a3b10" stroke-width="1.6" fill="none" />
+                <!-- lead reindeer -->
+                <g class="deer">
+                  <path d="M6 7 l-3 -5 M6 7 l1 -6 M4 4 l-3 0 M9 6 l3 -5 M10 5 l4 -2" stroke="#5b3a1a" stroke-width="1.8" stroke-linecap="round" fill="none" />
+                  <ellipse cx="18" cy="20" rx="11" ry="5.5" fill="#8b5a2b" />
+                  <path d="M10 18 L7 10" stroke="#8b5a2b" stroke-width="5" stroke-linecap="round" />
+                  <ellipse cx="6" cy="9" rx="4.5" ry="3.5" fill="#8b5a2b" />
+                  <circle cx="2" cy="10" r="2.4" fill="#ff2b2b" />
+                  <circle cx="5.5" cy="7.8" r="0.9" fill="#1b1b1b" />
+                  <path d="M11 24 l-4 6 M15 25 l-1 7 M23 25 l2 7 M27 23 l4 6" stroke="#5b3a1a" stroke-width="2" stroke-linecap="round" />
+                  <path d="M29 18 l3 -3" stroke="#8b5a2b" stroke-width="2.5" stroke-linecap="round" />
+                </g>
+                <!-- sleigh -->
+                <path d="M50 38 H 86 Q 94 38 94 32" stroke="#f2b632" stroke-width="2.6" fill="none" stroke-linecap="round" />
+                <path d="M56 38 v-5 M80 38 v-5" stroke="#f2b632" stroke-width="2" />
+                <path d="M52 20 Q 50 33 60 33 H 84 Q 90 33 90 26 V 16 Q 82 22 72 22 H 58 Q 54 22 52 20 Z" fill="#d62828" />
+                <path d="M54 24 H 86" stroke="#f2b632" stroke-width="1.6" />
+                <!-- Santa -->
+                <circle cx="74" cy="15" r="7" fill="#d62828" />
+                <circle cx="70" cy="9" r="4.2" fill="#ffd9b8" />
+                <path d="M66.5 10 Q 70 18 74 11 Z" fill="#ffffff" />
+                <path d="M66 6.5 Q 71 -2 77 4 L 74 7 Z" fill="#d62828" />
+                <circle cx="77.5" cy="4" r="1.8" fill="#ffffff" />
+                <path d="M65.6 6.5 H 74.5" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
+                <!-- sack -->
+                <path d="M80 18 Q 79 6 86 6 Q 93 7 90 18 Z" fill="#2a9d4b" />
+                <path d="M83.5 7 Q 85 3 87.5 7" stroke="#f2b632" stroke-width="1.4" fill="none" />
+              </g>
+            </g>
+          </g>
+        </svg>
+      </figure>
+
+      <aside class="card">
+        <div class="row">
+          <span class="label">Now delivering over</span>
+          <strong id="country" class="big">{santa.country ?? 'somewhere snowy'}</strong>
+        </div>
+        <div class="grid">
+          <div>
+            <span class="label">Time zone</span>
+            <strong id="zone">{santa.zone}</strong>
+          </div>
+          <div>
+            <span class="label">Local time</span>
+            <strong id="local">{santa.localTime}</strong>
+          </div>
+          <div>
+            <span class="label">Position</span>
+            <strong id="coords">{santa.lat.toFixed(1)}°, {santa.lon.toFixed(1)}°</strong>
+          </div>
+          <div>
+            <span class="label">Next time zone in</span>
+            <strong id="next">{Math.ceil((1 - santa.progress) * 60)} min</strong>
+          </div>
+        </div>
+        <p class="footnote">Santa only lands where it is night and only over land. The sun is chasing him westwards.</p>
+      </aside>
+    </main>
+
+    <script is:inline define:vars={{ initialTime: santa.time }}>
+      const params = new URLSearchParams(location.search);
+      const speed = Math.max(Number(params.get('speed')) || 1, 1);
+      const start = Date.parse(initialTime);
+      const loaded = Date.now();
+      const interval = speed > 1 ? 1000 : 3000;
+
+      const santaEl = document.getElementById('santa');
+      const trail = document.getElementById('trail');
+      const night = document.getElementById('night');
+      const sun = document.getElementById('sun');
+      const text = (id, value) => (document.getElementById(id).textContent = value);
+      let last = null;
+
+      santaEl.style.transition = `transform ${interval}ms linear`;
+
+      async function tick() {
+        const t = start + (Date.now() - loaded) * speed;
+        try {
+          const res = await fetch(`/api/santa.json?t=${Math.round(t)}`);
+          const s = await res.json();
+          const jump = last && Math.hypot(s.x - last.x, s.y - last.y) > 250;
+          santaEl.style.transition = jump ? 'none' : `transform ${interval}ms linear`;
+          santaEl.style.transform = `translate(${s.x}px, ${s.y}px)`;
+          night.setAttribute('d', s.nightPath);
+          sun.setAttribute('cx', s.sunX);
+          sun.setAttribute('cy', s.sunY);
+          if (last && !jump) dropSparkle(last.x, last.y);
+          last = s;
+          text('country', s.country ?? 'somewhere snowy');
+          text('zone', s.zone);
+          text('local', s.localTime);
+          text('coords', `${s.lat.toFixed(1)}°, ${s.lon.toFixed(1)}°`);
+          text('next', `${Math.ceil((1 - s.progress) * 60)} min`);
+        } catch {
+          // Try again on the next tick.
+        }
+      }
+
+      function dropSparkle(x, y) {
+        const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        c.setAttribute('cx', x);
+        c.setAttribute('cy', y);
+        c.setAttribute('r', 2.5);
+        c.setAttribute('class', 'sparkle');
+        trail.appendChild(c);
+        setTimeout(() => c.remove(), 12000);
+      }
+
+      tick();
+      setInterval(tick, interval);
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --bg: #07142e;
+    --ink: #f5f7ff;
+    --muted: #a9b8de;
+    --accent: #ffd54a;
+    --red: #d62828;
+    --card: rgba(255, 255, 255, 0.08);
+    --land: #eef3fb;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  html,
+  body {
+    margin: 0;
+    min-height: 100%;
+  }
+  body {
+    background:
+      radial-gradient(1px 1px at 10% 20%, #fff8 50%, transparent),
+      radial-gradient(1px 1px at 30% 80%, #fff6 50%, transparent),
+      radial-gradient(1.5px 1.5px at 70% 30%, #fff9 50%, transparent),
+      radial-gradient(1px 1px at 85% 65%, #fff7 50%, transparent),
+      radial-gradient(1px 1px at 55% 10%, #fff8 50%, transparent),
+      radial-gradient(ellipse at top, #13295a, var(--bg) 70%);
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: 'Nunito', system-ui, sans-serif;
+    overflow-x: hidden;
+  }
+  header {
+    text-align: center;
+    padding: 28px 16px 8px;
+  }
+  h1 {
+    font-family: 'Mountains of Christmas', cursive;
+    font-size: clamp(2.6rem, 7vw, 4.8rem);
+    margin: 0;
+    color: #fff;
+    text-shadow:
+      0 0 18px rgba(255, 213, 74, 0.55),
+      0 3px 0 var(--red);
+    letter-spacing: 0.02em;
+  }
+  .tagline {
+    margin: 4px 0 0;
+    color: var(--muted);
+  }
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px;
+    display: grid;
+    gap: 20px;
+  }
+  .map {
+    margin: 0;
+  }
+  .map svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.45));
+  }
+  .country {
+    fill: var(--land);
+    stroke: #b8c7e3;
+    stroke-width: 0.5;
+  }
+  .graticule {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.12);
+    stroke-width: 0.5;
+  }
+  .night {
+    fill: #020820;
+    fill-opacity: 0.45;
+    pointer-events: none;
+  }
+  .sphere-edge {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.35);
+    stroke-width: 1;
+  }
+  #santa {
+    will-change: transform;
+  }
+  .bob {
+    animation: bob 1.6s ease-in-out infinite;
+  }
+  @keyframes bob {
+    0%,
+    100% {
+      transform: translateY(0) rotate(-2deg);
+    }
+    50% {
+      transform: translateY(-4px) rotate(2deg);
+    }
+  }
+  .sparkle {
+    fill: var(--accent);
+    animation: fade 12s linear forwards;
+  }
+  @keyframes fade {
+    from {
+      opacity: 0.9;
+    }
+    to {
+      opacity: 0;
+      r: 0.5;
+    }
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 18px;
+    padding: 18px 20px;
+    backdrop-filter: blur(6px);
+  }
+  .label {
+    display: block;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  .big {
+    font-size: 1.8rem;
+    color: var(--accent);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px;
+    margin-top: 14px;
+  }
+  .grid strong {
+    font-size: 1.15rem;
+  }
+  .footnote {
+    margin: 16px 0 0;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  .snow {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(2px 2px at 20px 30px, #fff, transparent),
+      radial-gradient(2px 2px at 120px 80px, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 200px 150px, #fff, transparent),
+      radial-gradient(2px 2px at 80px 200px, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 260px 40px, #fff, transparent);
+    background-size: 300px 250px;
+    opacity: 0.5;
+    animation: snow 14s linear infinite;
+  }
+  @keyframes snow {
+    from {
+      background-position: 0 0;
+    }
+    to {
+      background-position: 60px 250px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .snow,
+    .bob {
+      animation: none;
+    }
+  }
+</style>
