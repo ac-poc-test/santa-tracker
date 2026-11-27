@@ -27,7 +27,7 @@ const countries = feature(countriesTopo as any, (countriesTopo as any).objects.c
 
 const projection = geoNaturalEarth1().fitExtent(
   [
-    [8, 56],
+    [8, 34],
     [MAP_WIDTH - 8, MAP_HEIGHT - 40],
   ],
   { type: 'Sphere' },
